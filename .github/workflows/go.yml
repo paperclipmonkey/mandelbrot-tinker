@@ -1,0 +1,36 @@
+name: Go
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Set up Go
+          uses: actions/setup-go@v2
+          with:
+              go-version: 1.17
+
+        - name: Install dependencies
+          run: go mod tidy
+
+        - name: Run tests
+          run: go test ./...
+
+        - name: Build Docker image
+          uses: docker/build-push-action@v2
+          with:
+              context: .
+              push: true
+              tags: 59vkckvlkjdfglkjdfv/mandelbrot-tinker:latest, 59vkckvlkjdfglkjdfv/mandelbrot-tinker:${{ github.sha }}
+              platforms: linux/amd64,linux/arm64
