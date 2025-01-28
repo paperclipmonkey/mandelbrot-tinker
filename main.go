@@ -22,8 +22,6 @@ func processInput() (io.WriterTo, error) {
 
 	p := plot.New()
 
-	p.Title.Text = "Mandelbrot Set"
-
 	// Make a scatter plotter and set its style.
 	s, err := plotter.NewScatter(scatterData)
 	if err != nil {
