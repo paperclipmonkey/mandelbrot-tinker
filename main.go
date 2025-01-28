@@ -27,6 +27,7 @@ func processInput() (io.WriterTo, error) {
 	if err != nil {
 		panic(err)
 	}
+
 	s.GlyphStyle.Color = color.RGBA{R: 255, B: 128, A: 255}
 
 	s.GlyphStyle.Radius = vg.Points(0.1)
@@ -34,7 +35,6 @@ func processInput() (io.WriterTo, error) {
 	p.Add(s)
 
 	return p.WriterTo(0.5*1000, 0.5*1000, "png")
-	// return 0, nil
 }
 
 func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
