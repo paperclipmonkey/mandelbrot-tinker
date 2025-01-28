@@ -1,9 +1,8 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"image/color"
+	"io"
 	"math/cmplx"
 
 	"gonum.org/v1/plot"
@@ -12,47 +11,30 @@ import (
 )
 
 func main() {
-	// Define a string flag with a default value and a short description.
-	input := flag.String("input", "", "Input value to be processed")
-
-	// Parse the command-line flags.
-	flag.Parse()
-
-	// Check if the input flag was provided.
-	if *input == "" {
-		fmt.Println("Please provide an input value using the -input flag.")
-		return
-	}
-
-	processInput()
+	webserver()
 }
 
-func processInput() (int64, error) {
-	c := complexMatrix(-2, 0.5, -1.5, 1.5, 1024)
+func processInput() (io.WriterTo, error) {
+	c := complexMatrix(-2, 0.5, -1.5, 1.5, 256)
 	members := getMembers(c, 20)
 
 	scatterData := generatePoints(members)
 
 	p := plot.New()
 
-	p.Title.Text = "Mandelbrot Set"
-
 	// Make a scatter plotter and set its style.
 	s, err := plotter.NewScatter(scatterData)
 	if err != nil {
 		panic(err)
 	}
+
 	s.GlyphStyle.Color = color.RGBA{R: 255, B: 128, A: 255}
 
 	s.GlyphStyle.Radius = vg.Points(0.1)
 
 	p.Add(s)
 
-	// Save the plot to a PNG file.
-	if err := p.Save(1*1000, 1*1000, "points.png"); err != nil {
-		panic(err)
-	}
-	return 0, nil
+	return p.WriterTo(0.5*1000, 0.5*1000, "png")
 }
 
 func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
