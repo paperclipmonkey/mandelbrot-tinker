@@ -12,9 +12,32 @@
             <h1 class="display-4">Mandelbrot Set</h1>
             <p class="lead">This is a visualization of the Mandelbrot set.</p>
         </div>
+        <form class="mb-4" action="/mandelbrot" method="get" id="mandelbrotForm">
+            <div class="form-row">
+            <div class="col">
+                <input type="number" class="form-control" name="width" id="width" placeholder="Width" value="1024" required>
+            </div>
+            <div class="col">
+                <input type="number" class="form-control" name="height" id="height" placeholder="Height" value="1024" required>
+            </div>
+            <div class="col">
+                <button type="submit" class="btn btn-primary">Generate</button>
+            </div>
+            </div>
+        </form>
         <div class="text-center">
-            <img src="/mandelbrot" class="img-fluid" alt="Mandelbrot Set">
+            <img id="mandelbrotImage" src="/mandelbrot" class="img-fluid" alt="Mandelbrot Set">
         </div>
+        <script>
+            document.getElementById('mandelbrotForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const img = document.getElementById('mandelbrotImage');
+            img.src = `/mandelbrot?width=${width}&height=${height}`;
+            });
+        </script>
+
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
