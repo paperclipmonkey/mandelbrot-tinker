@@ -14,30 +14,63 @@
         </div>
         <form class="mb-4" action="/mandelbrot" method="get" id="mandelbrotForm">
             <div class="form-row">
-            <div class="col">
-                <input type="number" class="form-control" name="width" id="width" placeholder="Width" value="1024" required>
+                <div class="form-group col-md-2">
+                    <label for="width">Width</label>
+                    <input type="number" class="form-control" name="width" id="width" placeholder="Width" value="1024" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="height">Height</label>
+                    <input type="number" class="form-control" name="height" id="height" placeholder="Height" value="1024" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="xmin">X Min</label>
+                    <input type="number" class="form-control" name="xmin" id="xmin" placeholder="X Min" value="-2.0" step="0.1" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="xmax">X Max</label>
+                    <input type="number" class="form-control" name="xmax" id="xmax" placeholder="X Max" value="2.0" step="0.1" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="ymin">Y Min</label>
+                    <input type="number" class="form-control" name="ymin" id="ymin" placeholder="Y Min" value="-2.0" step="0.1" required>
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="ymax">Y Max</label>
+                    <input type="number" class="form-control" name="ymax" id="ymax" placeholder="Y Max" value="2.0" step="0.1" required>
+                </div>
             </div>
-            <div class="col">
-                <input type="number" class="form-control" name="height" id="height" placeholder="Height" value="1024" required>
-            </div>
-            <div class="col">
-                <button type="submit" class="btn btn-primary">Generate</button>
-            </div>
-            </div>
+            <button type="submit" class="btn btn-primary">Generate</button>
         </form>
         <div class="text-center">
-            <img id="mandelbrotImage" src="/mandelbrot" class="img-fluid" alt="Mandelbrot Set">
+            <img id="mandelbrotImage" src="/loading" class="img-fluid" alt="Mandelbrot Set">
         </div>
         <script>
             document.getElementById('mandelbrotForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const width = document.getElementById('width').value;
-            const height = document.getElementById('height').value;
-            const img = document.getElementById('mandelbrotImage');
-            img.src = `/mandelbrot?width=${width}&height=${height}`;
+                event.preventDefault();
+                const width = document.getElementById('width').value;
+                const height = document.getElementById('height').value;
+                const img = document.getElementById('mandelbrotImage');
+                const xmin = document.getElementById('xmin').value;
+                const xmax = document.getElementById('xmax').value;
+                const ymin = document.getElementById('ymin').value;
+                const ymax = document.getElementById('ymax').value;
+                img.src = `/mandelbrot?width=${width}&height=${height}&xmin=${xmin}&xmax=${xmax}&ymin=${ymin}&ymax=${ymax}`;
+                img.style.display = 'none';
+                const loading = document.createElement('div');
+                loading.className = 'spinner-border text-primary';
+                loading.role = 'status';
+                const loadingText = document.createElement('span');
+                loadingText.className = 'sr-only';
+                loadingText.innerText = 'Loading...';
+                loading.appendChild(loadingText);
+                img.parentNode.appendChild(loading);
+
+                img.onload = function() {
+                    loading.remove();
+                    img.style.display = 'block';
+                };
             });
         </script>
-
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>

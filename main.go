@@ -3,6 +3,7 @@ package main
 import (
 	"image/color"
 	"io"
+	"log"
 	"math/cmplx"
 
 	"gonum.org/v1/plot"
@@ -14,8 +15,9 @@ func main() {
 	webserver()
 }
 
-func processInput() (io.WriterTo, error) {
-	c := complexMatrix(-2, 0.5, -1.5, 1.5, 256)
+func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width int, height int) (io.WriterTo, error) {
+	log.Printf("xmin: %f, ymin: %f, xmax: %f, ymax: %f, width: %d, height: %d", xmin, ymin, xmax, ymax, width, height)
+	c := complexMatrix(xmin, xmax, ymin, ymax, max(width, height, 100))
 	members := getMembers(c, 20)
 
 	scatterData := generatePoints(members)
@@ -34,7 +36,7 @@ func processInput() (io.WriterTo, error) {
 
 	p.Add(s)
 
-	return p.WriterTo(0.5*1000, 0.5*1000, "png")
+	return p.WriterTo(vg.Length(width), vg.Length(height), "png")
 }
 
 func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
