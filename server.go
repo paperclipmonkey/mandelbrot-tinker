@@ -46,7 +46,7 @@ func webserver() {
 			ymaxF = 2.0
 		}
 
-		widthI, _ := strconv.Atoi(params.Get("width"))
+		widthI, err := strconv.Atoi(params.Get("width")); if err != nil { widthI = 800 }
 		heightI, _ := strconv.Atoi(params.Get("height"))
 
 		img, err := processInput(xminF, yminF, xmaxF, ymaxF, widthI, heightI)
