@@ -26,7 +26,7 @@ func webserver() {
 		params := r.URL.Query()
 		// xmin := params.Get("xmin")
 
-		xminF, _ := strconv.ParseFloat(params.Get("xmin"), 64)
+		xminF, err := strconv.ParseFloat(params.Get("xmin"), 64); if err != nil { xminF = -2.0 }
 		if xminF == 0 {
 			xminF = -2.0
 		}
