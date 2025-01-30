@@ -26,3 +26,13 @@ jobs:
 
         - name: Run tests
           run: go test ./...
+
+        - name: Check formatting
+          run: go fmt ./... | tee fmt.log
+
+        - name: Ensure no formatting changes
+          run: |
+            if [ -s fmt.log ]; then
+              echo "Code is not properly formatted. Please run 'go fmt'."
+              exit 1
+            fi
