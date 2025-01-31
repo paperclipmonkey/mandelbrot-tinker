@@ -26,3 +26,13 @@ jobs:
 
         - name: Run tests
           run: go test ./...
+
+        - name: Check formatting
+          run: gofmt -l .
+
+        - name: Ensure no formatting changes
+          run: |
+            if [ -n "$(gofmt -l .)" ]; then
+              echo "Code is not properly formatted. Please run 'gofmt'."
+              exit 1
+            fi
