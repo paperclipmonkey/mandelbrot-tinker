@@ -1,5 +1,5 @@
 # mandelbrot-tinker
-Toy challenge to learn Go
+Toy challenge to learn Go.
 
 ![Mandelbrot Set](points.png)
 
@@ -18,7 +18,7 @@ docker run -it --rm 59vkckvlkjdfglkjdfv/mandelbrot-tinker
 
 ### Build
 To build the application, you need the following tools installed:
-- Go 1.23.5 or later
+- Go 1.23 or later
 - Docker
 
 #### Required Tools
