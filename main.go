@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+	log.Println("Opening server on port 80")
 	webserver()
 }
 
