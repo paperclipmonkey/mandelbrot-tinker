@@ -1,6 +1,6 @@
 module example/paperclipmonkey/mandelbrot-tinker
 
-go 1.23.5
+go 1.23
 
 require (
 	gioui.org v0.2.0 // indirect
