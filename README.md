@@ -43,4 +43,3 @@ To build the application, you need the following tools installed:
     ```sh
     go build -o mandelbrot-tinker
     ```
-

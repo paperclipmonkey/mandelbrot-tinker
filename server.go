@@ -69,8 +69,22 @@ func webserver() {
 		http.ServeFile(w, r, "static/index.html")
 	})
 
+	http.HandleFunc("/livez", func(w http.ResponseWriter, r *http.Request) {
+		// logRequest(r) // Don't log livez requests
+		w.Write([]byte("ok"))
+	})
+
+	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		logRequest(r)
+		// Stub health check. If we have dependencies, check them here
+		w.Write([]byte("ok"))
+	})
+
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	http.ListenAndServe(":80", nil)
+	err := http.ListenAndServe(":80", nil)
+	if err != nil {
+		log.Fatalf("could not start server: %s\n", err)
+	}
 }
