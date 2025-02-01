@@ -37,7 +37,7 @@ To build the application, you need the following tools installed:
     ```
 2. Install dependencies:
     ```sh
-    go mod tidy
+    go get
     ```
 3. Run tests:
     ```sh
@@ -46,4 +46,8 @@ To build the application, you need the following tools installed:
 4. Build the application:
     ```sh
     go build -o mandelbrot-tinker
+    ```
+    or
+    ```
+    go run .
     ```
