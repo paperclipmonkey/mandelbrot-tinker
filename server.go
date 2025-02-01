@@ -30,30 +30,31 @@ func webserver(port int) {
 		if err != nil {
 			xminF = -2.0
 		}
-		if xminF == 0 {
-			xminF = -2.0
-		}
+		xminF = clipToRange(xminF, -2.0, 2.0)
 
 		yminF, _ := strconv.ParseFloat(params.Get("ymin"), 64)
-		if yminF == 0 {
-			yminF = -2.0
-		}
+		yminF = clipToRange(yminF, -2.0, 2.0)
 
 		xmaxF, _ := strconv.ParseFloat(params.Get("xmax"), 64)
 		if xmaxF == 0 {
 			xmaxF = 2.0
 		}
+		xmaxF = clipToRange(xmaxF, -2.0, 2.0)
 
 		ymaxF, _ := strconv.ParseFloat(params.Get("ymax"), 64)
 		if ymaxF == 0 {
 			ymaxF = 2.0
 		}
+		ymaxF = clipToRange(ymaxF, -2.0, 2.0)
 
 		widthI, err := strconv.Atoi(params.Get("width"))
 		if err != nil {
 			widthI = 800
 		}
+		widthI = clipToRangeInt(widthI, 128, 1024)
+
 		heightI, _ := strconv.Atoi(params.Get("height"))
+		heightI = clipToRangeInt(heightI, 128, 1024)
 
 		img, err := processInput(xminF, yminF, xmaxF, ymaxF, widthI, heightI)
 		if err != nil {
@@ -87,4 +88,24 @@ func webserver(port int) {
 	if err != nil {
 		log.Fatalf("could not start server: %s\n", err)
 	}
+}
+
+func clipToRange(xminF, f1, f2 float64) float64 {
+	if xminF < f1 {
+		return f1
+	}
+	if xminF > f2 {
+		return f2
+	}
+	return xminF
+}
+
+func clipToRangeInt(xminI, f1, f2 int) int {
+	if xminI < f1 {
+		return f1
+	}
+	if xminI > f2 {
+		return f2
+	}
+	return xminI
 }

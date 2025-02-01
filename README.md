@@ -10,6 +10,10 @@ Toy challenge to learn Go.
 
 ## How to Use
 
+### GCP
+See it running on GCP at:
+[https://mandelbrot-629070084289.europe-west2.run.app/](https://mandelbrot-629070084289.europe-west2.run.app/)
+
 ### Run from a Docker Container
 To run the application from a Docker container, use the following command:
 ```sh
