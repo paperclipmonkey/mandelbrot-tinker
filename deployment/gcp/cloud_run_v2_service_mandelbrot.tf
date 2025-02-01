@@ -7,7 +7,7 @@ resource "google_cloud_run_v2_service" "mandelbrot" {
 
   template {
     containers {
-      image = "us-docker.pkg.dev/cloudrun/container/hello"
+      image = "59vkckvlkjdfglkjdfv/mandelbrot-tinker:0.0.6"
       resources {
         limits = {
           cpu    = "2"
