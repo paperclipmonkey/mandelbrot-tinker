@@ -19,7 +19,7 @@ func logRequest(r *http.Request) {
 	)
 }
 
-func webserver() {
+func webserver(port int) {
 	http.HandleFunc("/mandelbrot", func(w http.ResponseWriter, r *http.Request) {
 		logRequest(r)
 		// Parse query parameters
@@ -83,7 +83,7 @@ func webserver() {
 	fs := http.FileServer(http.Dir("static/"))
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	err := http.ListenAndServe(":80", nil)
+	err := http.ListenAndServe(":"+strconv.Itoa(port), nil)
 	if err != nil {
 		log.Fatalf("could not start server: %s\n", err)
 	}
