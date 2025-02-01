@@ -1,8 +1,6 @@
 name: Deploy to GCP
 
 on:
-  release:
-    types: [published]
   workflow_run:
     workflows: ["Publish Docker image"]
     types:
