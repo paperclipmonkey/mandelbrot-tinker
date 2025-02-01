@@ -29,9 +29,11 @@ jobs:
       - name: Initialize Terraform
         working-directory: ./deployment/gcp
         run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
 
       - name: Apply Terraform
         working-directory: ./deployment/gcp
         env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
         run: terraform apply -auto-approve -var="image_tag=${{ github.event.release.tag_name }}"
