@@ -8,7 +8,7 @@ resource "google_cloud_run_v2_service" "mandelbrot" {
 
   template {
     containers {
-      image = "59vkckvlkjdfglkjdfv/mandelbrot-tinker:${var.mandelbrot_version}"
+      image = "59vkckvlkjdfglkjdfv/mandelbrot-tinker:${var.image_tag}"
       resources {
         limits = {
           cpu    = "2"
