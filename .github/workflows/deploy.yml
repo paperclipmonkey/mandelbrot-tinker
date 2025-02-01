@@ -34,4 +34,4 @@ jobs:
         working-directory: ./deployment/gcp
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
-        run: terraform apply -auto-approve -var="image_tag=${{ github.event.release.tag_name }}"
+        run: terraform apply -auto-approve -var="image_tag=$(git describe --tags --abbrev=0)"
