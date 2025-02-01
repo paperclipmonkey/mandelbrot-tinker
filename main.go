@@ -40,9 +40,7 @@ func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width 
 	}
 
 	s.GlyphStyle.Color = color.RGBA{R: 255, B: 128, A: 255}
-
 	s.GlyphStyle.Radius = vg.Points(0.1)
-
 	p.Add(s)
 
 	return p.WriterTo(vg.Length(width), vg.Length(height), "png")
