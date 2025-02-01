@@ -7,11 +7,11 @@ resource "google_cloud_run_v2_service" "mandelbrot" {
 
   template {
     containers {
-      image = "59vkckvlkjdfglkjdfv/mandelbrot-tinker:0.0.6"
+      image = "59vkckvlkjdfglkjdfv/mandelbrot-tinker:0.0.7"
       resources {
         limits = {
           cpu    = "2"
-          memory = "8096Mi"
+          memory = "8192Mi"
         }
       }
       startup_probe {
