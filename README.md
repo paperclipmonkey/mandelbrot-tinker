@@ -17,7 +17,7 @@ See it running on GCP at:
 ### Run from a Docker Container
 To run the application from a Docker container, use the following command:
 ```sh
-docker run -it --rm 59vkckvlkjdfglkjdfv/mandelbrot-tinker
+docker run --pull=always --rm 59vkckvlkjdfglkjdfv/mandelbrot-tinker:latest
 ```
 
 ### Build
