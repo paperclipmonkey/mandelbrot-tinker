@@ -5,6 +5,8 @@ import (
 	"io"
 	"log"
 	"math/cmplx"
+	"os"
+	"strconv"
 
 	"gonum.org/v1/plot"
 	"gonum.org/v1/plot/plotter"
@@ -12,8 +14,14 @@ import (
 )
 
 func main() {
-	log.Println("Server opened on port 80")
-	webserver()
+	port := 80
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		if p, err := strconv.Atoi(envPort); err == nil {
+			port = p
+		}
+	}
+	log.Printf("Server opened on port %d", port)
+	webserver(port)
 }
 
 func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width int, height int) (io.WriterTo, error) {
