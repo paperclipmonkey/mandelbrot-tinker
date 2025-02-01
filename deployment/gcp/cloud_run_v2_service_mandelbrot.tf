@@ -1,3 +1,4 @@
+// Create a Cloud Run service
 resource "google_cloud_run_v2_service" "mandelbrot" {
   name     = "mandelbrot"
   location = "europe-west2" // London
@@ -32,6 +33,7 @@ resource "google_cloud_run_v2_service" "mandelbrot" {
   }
 }
 
+// Allow all users to invoke the service
 resource "google_cloud_run_service_iam_binding" "mandelbrot" {
   project = "mandelbrot-tinker"
   location = google_cloud_run_v2_service.mandelbrot.location
