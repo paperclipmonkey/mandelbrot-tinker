@@ -32,9 +32,8 @@ func slippyToMandelbrot(z, x, y int) (float64, float64, float64, float64) {
 	n := 1 << uint(z)
 	xmin := float64(x)/float64(n)*4 - 2
 	xmax := float64(x+1)/float64(n)*4 - 2
-	// Invert the Y-axis
-	ymin := 2 - float64(y+1)/float64(n)*4
-	ymax := 2 - float64(y)/float64(n)*4
+	ymin := float64(y)/float64(n)*4 - 2
+	ymax := float64(y+1)/float64(n)*4 - 2
 	return xmin, ymin, xmax, ymax
 }
 
