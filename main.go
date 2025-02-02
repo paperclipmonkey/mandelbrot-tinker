@@ -37,7 +37,7 @@ func slippyToMandelbrot(z, x, y int) (float64, float64, float64, float64) {
 func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width int, height int) (io.WriterTo, error) {
 	log.Printf("xmin: %f, ymin: %f, xmax: %f, ymax: %f, width: %d, height: %d", xmin, ymin, xmax, ymax, width, height)
 	c := complexMatrix(xmin, xmax, ymin, ymax, 256)
-	members := getMembers(c, 20)
+	members := getMembers(c, 100)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
