@@ -19,6 +19,7 @@ To run the application from a Docker container, use the following command:
 ```sh
 docker run --pull=always --rm 59vkckvlkjdfglkjdfv/mandelbrot-tinker:latest
 ```
+then open [http://localhost:80](http://localhost:80) in your web browser to interact with the Mandelbrot image.
 
 ### Build
 To build the application, you need the following tools installed:
