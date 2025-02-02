@@ -20,43 +20,30 @@ func logRequest(r *http.Request) {
 }
 
 func webserver(port int) {
-	http.HandleFunc("/mandelbrot", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/mandelbrot/{z}/{x}/{y}", func(w http.ResponseWriter, r *http.Request) {
+		// Extract z, x, y from URL path
 		logRequest(r)
-		// Parse query parameters
-		params := r.URL.Query()
-		// xmin := params.Get("xmin")
-
-		xminF, err := strconv.ParseFloat(params.Get("xmin"), 64)
+		z, err := strconv.Atoi(r.PathValue("z"))
 		if err != nil {
-			xminF = -2.0
+			http.Error(w, "Invalid z parameter", http.StatusBadRequest)
+			return
 		}
-		xminF = clipToRange(xminF, -2.0, 2.0)
-
-		yminF, _ := strconv.ParseFloat(params.Get("ymin"), 64)
-		yminF = clipToRange(yminF, -2.0, 2.0)
-
-		xmaxF, _ := strconv.ParseFloat(params.Get("xmax"), 64)
-		if xmaxF == 0 {
-			xmaxF = 2.0
-		}
-		xmaxF = clipToRange(xmaxF, -2.0, 2.0)
-
-		ymaxF, _ := strconv.ParseFloat(params.Get("ymax"), 64)
-		if ymaxF == 0 {
-			ymaxF = 2.0
-		}
-		ymaxF = clipToRange(ymaxF, -2.0, 2.0)
-
-		widthI, err := strconv.Atoi(params.Get("width"))
+		x, err := strconv.Atoi(r.PathValue("x"))
 		if err != nil {
-			widthI = 800
+			http.Error(w, "Invalid x parameter", http.StatusBadRequest)
+			return
 		}
-		widthI = clipToRangeInt(widthI, 128, 1024)
+		y, err := strconv.Atoi(r.PathValue("y"))
+		if err != nil {
+			http.Error(w, "Invalid y parameter", http.StatusBadRequest)
+			return
+		}
+		log.Printf("%d %d %d", z, x, y)
+		xmin, ymin, xmax, ymax := slippyToMandelbrot(z, x, y)
 
-		heightI, _ := strconv.Atoi(params.Get("height"))
-		heightI = clipToRangeInt(heightI, 128, 1024)
+		log.Printf("%f %f %f %f", xmin, ymin, xmax, ymax)
 
-		img, err := processInput(xminF, yminF, xmaxF, ymaxF, widthI, heightI)
+		img, err := processInput(xmin, ymin, xmax, ymax, 256, 256)
 		if err != nil {
 			http.Error(w, "Error generating image", http.StatusInternalServerError)
 			return
@@ -71,14 +58,11 @@ func webserver(port int) {
 	})
 
 	http.HandleFunc("/livez", func(w http.ResponseWriter, r *http.Request) {
-		// logRequest(r) // Don't log livez requests
 		w.Write([]byte("ok"))
 	})
 
 	http.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		logRequest(r)
-		// Stub health check. If we have dependencies, check them here
-		w.Write([]byte("ok"))
+		w.Write([]byte("ok")) // Stub health check. If we have dependencies, check them here
 	})
 
 	fs := http.FileServer(http.Dir("static/"))
@@ -88,24 +72,4 @@ func webserver(port int) {
 	if err != nil {
 		log.Fatalf("could not start server: %s\n", err)
 	}
-}
-
-func clipToRange(xminF, f1, f2 float64) float64 {
-	if xminF < f1 {
-		return f1
-	}
-	if xminF > f2 {
-		return f2
-	}
-	return xminF
-}
-
-func clipToRangeInt(xminI, f1, f2 int) int {
-	if xminI < f1 {
-		return f1
-	}
-	if xminI > f2 {
-		return f2
-	}
-	return xminI
 }

@@ -1,16 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"image"
 	"image/color"
+	"image/png"
 	"io"
 	"log"
 	"math/cmplx"
 	"os"
 	"strconv"
-
-	"gonum.org/v1/plot"
-	"gonum.org/v1/plot/plotter"
-	"gonum.org/v1/plot/vg"
 )
 
 func main() {
@@ -21,37 +20,52 @@ func main() {
 		}
 	}
 	log.Printf("Server opened on port %d", port)
+
 	webserver(port)
+}
+
+// Convert from slippy map z/x/y to mandelbrot coordinates in the -2 to 2 range
+func slippyToMandelbrot(z, x, y int) (float64, float64, float64, float64) {
+	n := 1 << uint(z)
+	xmin := float64(x)/float64(n)*4 - 2
+	xmax := float64(x+1)/float64(n)*4 - 2
+	ymin := float64(y)/float64(n)*4 - 2
+	ymax := float64(y+1)/float64(n)*4 - 2
+	return xmin, ymin, xmax, ymax
 }
 
 func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width int, height int) (io.WriterTo, error) {
 	log.Printf("xmin: %f, ymin: %f, xmax: %f, ymax: %f, width: %d, height: %d", xmin, ymin, xmax, ymax, width, height)
-	c := complexMatrix(xmin, xmax, ymin, ymax, max(width, height, 100))
+	c := complexMatrix(xmin, xmax, ymin, ymax, 256)
 	members := getMembers(c, 20)
 
-	scatterData := generatePoints(members)
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	p := plot.New()
+	for _, member := range members {
+		// Map the complex number to pixel coordinates
+		px := int((real(member) - xmin) / (xmax - xmin) * float64(width))
+		py := int((imag(member) - ymin) / (ymax - ymin) * float64(height))
 
-	// Make a scatter plotter and set its style.
-	s, err := plotter.NewScatter(scatterData)
-	if err != nil {
-		panic(err)
+		// Set the pixel color
+		if px >= 0 && px < width && py >= 0 && py < height {
+			img.Set(px, py, color.RGBA{R: 255, B: 128, A: 255})
+		}
 	}
 
-	s.GlyphStyle.Color = color.RGBA{R: 255, B: 128, A: 255}
-	s.GlyphStyle.Radius = vg.Points(0.1)
-	p.Add(s)
-
-	return p.WriterTo(vg.Length(width), vg.Length(height), "png")
+	var buf bytes.Buffer
+	err := png.Encode(&buf, img)
+	if err != nil {
+		return nil, err
+	}
+	return &buf, nil
 }
 
 func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
-	re := linspace(xmin, xmax, int((xmax-xmin)*float64(pixelDensity)))
-	im := linspace(ymin, ymax, int((ymax-ymin)*float64(pixelDensity)))
-	matrix := make([][]complex128, len(im))
+	re := linspace(xmin, xmax, pixelDensity)
+	im := linspace(ymin, ymax, pixelDensity)
+	matrix := make([][]complex128, pixelDensity)
 	for i := range matrix {
-		matrix[i] = make([]complex128, len(re))
+		matrix[i] = make([]complex128, pixelDensity)
 		for j := range matrix[i] {
 			matrix[i][j] = complex(re[j], im[i])
 		}
@@ -60,7 +74,7 @@ func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex
 }
 
 func linspace(start, end float64, num int) []float64 {
-	step := (end - start) / float64(num-1)
+	step := (end - start) / float64(num)
 	result := make([]float64, num)
 	for i := 0; i < num; i++ {
 		result[i] = start + float64(i)*step
@@ -86,13 +100,4 @@ func getMembers(c [][]complex128, numIterations int) []complex128 {
 		}
 	}
 	return members
-}
-
-func generatePoints(ns []complex128) plotter.XYs {
-	pts := make(plotter.XYs, len(ns))
-	for i := range pts {
-		pts[i].X = real(ns[i])
-		pts[i].Y = imag(ns[i])
-	}
-	return pts
 }
