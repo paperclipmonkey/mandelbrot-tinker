@@ -1,16 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"image"
 	"image/color"
+	"image/png"
 	"io"
 	"log"
 	"math/cmplx"
 	"os"
 	"strconv"
-
-	"gonum.org/v1/plot"
-	"gonum.org/v1/plot/plotter"
-	"gonum.org/v1/plot/vg"
 )
 
 func main() {
@@ -44,23 +43,27 @@ func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width 
 	c := complexMatrix(xmin, xmax, ymin, ymax, 256)
 	members := getMembers(c, 20)
 
-	scatterData := generatePoints(members)
+	// scatterData := generatePoints(members)
 
-	p := plot.New()
+	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
-	// Make a scatter plotter and set its style.
-	s, err := plotter.NewScatter(scatterData)
-	if err != nil {
-		panic(err)
+	for _, member := range members {
+		// Map the complex number to pixel coordinates
+		px := int((real(member) - xmin) / (xmax - xmin) * float64(width))
+		py := int((imag(member) - ymin) / (ymax - ymin) * float64(height))
+
+		// Set the pixel color
+		if px >= 0 && px < width && py >= 0 && py < height {
+			img.Set(px, py, color.RGBA{R: 255, B: 128, A: 255})
+		}
 	}
 
-	p.HideAxes()
-
-	s.GlyphStyle.Color = color.RGBA{R: 255, B: 128, A: 255}
-	s.GlyphStyle.Radius = vg.Points(0.1)
-	p.Add(s)
-
-	return p.WriterTo(vg.Length(width), vg.Length(height), "png")
+	var buf bytes.Buffer
+	err := png.Encode(&buf, img)
+	if err != nil {
+		return nil, err
+	}
+	return &buf, nil
 }
 
 func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
@@ -105,11 +108,11 @@ func getMembers(c [][]complex128, numIterations int) []complex128 {
 	return members
 }
 
-func generatePoints(ns []complex128) plotter.XYs {
-	pts := make(plotter.XYs, len(ns))
-	for i := range pts {
-		pts[i].X = real(ns[i])
-		pts[i].Y = imag(ns[i])
-	}
-	return pts
-}
+// func generatePoints(ns []complex128) plotter.XYs {
+// 	pts := make(plotter.XYs, len(ns))
+// 	for i := range pts {
+// 		pts[i].X = real(ns[i])
+// 		pts[i].Y = imag(ns[i])
+// 	}
+// 	return pts
+// }
