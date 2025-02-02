@@ -66,9 +66,9 @@ func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width 
 func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
 	re := linspace(xmin, xmax, pixelDensity)
 	im := linspace(ymin, ymax, pixelDensity)
-	matrix := make([][]complex128, len(im))
+	matrix := make([][]complex128, pixelDensity)
 	for i := range matrix {
-		matrix[i] = make([]complex128, len(re))
+		matrix[i] = make([]complex128, pixelDensity)
 		for j := range matrix[i] {
 			matrix[i][j] = complex(re[j], im[i])
 		}
@@ -77,7 +77,7 @@ func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex
 }
 
 func linspace(start, end float64, num int) []float64 {
-	step := (end - start) / float64(num-1)
+	step := (end - start) / float64(num)
 	result := make([]float64, num)
 	for i := 0; i < num; i++ {
 		result[i] = start + float64(i)*step
