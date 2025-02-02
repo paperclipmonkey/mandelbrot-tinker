@@ -21,9 +21,6 @@ func main() {
 	}
 	log.Printf("Server opened on port %d", port)
 
-	// xmin, ymin, xmax, ymax := slippyToMandelbrot(1, 0, 1)
-	// log.Printf("%f %f %f %f", xmin, ymin, xmax, ymax)
-
 	webserver(port)
 }
 
@@ -41,8 +38,6 @@ func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width 
 	log.Printf("xmin: %f, ymin: %f, xmax: %f, ymax: %f, width: %d, height: %d", xmin, ymin, xmax, ymax, width, height)
 	c := complexMatrix(xmin, xmax, ymin, ymax, 256)
 	members := getMembers(c, 20)
-
-	// scatterData := generatePoints(members)
 
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
 
@@ -106,12 +101,3 @@ func getMembers(c [][]complex128, numIterations int) []complex128 {
 	}
 	return members
 }
-
-// func generatePoints(ns []complex128) plotter.XYs {
-// 	pts := make(plotter.XYs, len(ns))
-// 	for i := range pts {
-// 		pts[i].X = real(ns[i])
-// 		pts[i].Y = imag(ns[i])
-// 	}
-// 	return pts
-// }
