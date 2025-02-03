@@ -91,43 +91,6 @@ func TestLivez(t *testing.T) {
 	}
 }
 
-func TestMandelbrotGoodValues(t *testing.T) {
-	req, err := http.NewRequest("GET", "/mandelbrot?xmin=-2&ymin=-2&xmax=2&ymax=2&width=800&height=800", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Simulate the mandelbrot handler
-		w.WriteHeader(http.StatusOK)
-	})
-
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-}
-
-func TestMandelbrotOddValues(t *testing.T) {
-	req, err := http.NewRequest("GET", "/mandelbrot?xmin=-1000&ymin=-1000&xmax=1000&ymax=1000&width=10000&height=10000", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Simulate the mandelbrot handler
-		w.WriteHeader(http.StatusOK)
-	})
-
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-}
 func TestSlippyToMandelbrot(t *testing.T) {
 	tests := []struct {
 		z, x, y                int
