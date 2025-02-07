@@ -11,8 +11,8 @@ resource "google_cloud_run_v2_service" "mandelbrot" {
       image = "59vkckvlkjdfglkjdfv/mandelbrot-tinker:${var.image_tag}"
       resources {
         limits = {
-          cpu    = "2"
-          memory = "8192Mi"
+          cpu    = "1"
+          memory = "256Mi"
         }
       }
       startup_probe {
