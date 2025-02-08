@@ -61,7 +61,7 @@ func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width 
 
 		// Set the pixel color
 		if px >= 0 && px < width && py >= 0 && py < height {
-			stability := isStable(member, 50)
+			stability := isStable(member, 35)
 			if cmplx.Abs(stability) > 2 || cmplx.IsNaN(stability) {
 				color, _ := colorful.Hex("#ffffff")
 				img.Set(px, py, color)
