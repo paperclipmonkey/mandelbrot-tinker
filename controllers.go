@@ -50,10 +50,7 @@ func handleMandelbrot(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "y parameter must be within range for zoom level", http.StatusBadRequest)
 		return
 	}
-	log.Printf("%d %d %d", z, x, y)
 	xmin, ymin, xmax, ymax := slippyToMandelbrot(z, x, y)
-
-	log.Printf("%f %f %f %f", xmin, ymin, xmax, ymax)
 
 	img, err := processInput(xmin, ymin, xmax, ymax, 256, 256)
 	if err != nil {
