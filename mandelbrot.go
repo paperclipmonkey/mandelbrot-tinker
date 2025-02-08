@@ -18,6 +18,7 @@ import (
 	"io"
 	"math"
 	"math/cmplx"
+	"sync"
 
 	"github.com/lucasb-eyer/go-colorful"
 )
@@ -32,48 +33,41 @@ func slippyToMandelbrot(z, x, y int) (float64, float64, float64, float64) {
 	return xmin, ymin, xmax, ymax
 }
 
-// Process the input parameters and generate a Mandelbrot set image
+// New processInput: computes each pixel directly in parallel.
 func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width int, height int) (io.WriterTo, error) {
-	// log.Printf("xmin: %f, ymin: %f, xmax: %f, ymax: %f, width: %d, height: %d", xmin, ymin, xmax, ymax, width, height)
-	c := complexMatrix(xmin, xmax, ymin, ymax, 256)
-
-	// Flatten the matrix into a slice
-	flattened := make([]complex128, 0, len(c)*len(c[0]))
-	for _, row := range c {
-		flattened = append(flattened, row...)
-	}
-	members := flattened
-
 	img := image.NewRGBA(image.Rect(0, 0, width, height))
+	white, _ := colorful.Hex("#ffffff")
+	// Precompute step sizes.
+	dx := (xmax - xmin) / float64(width)
+	dy := (ymax - ymin) / float64(height)
 
-	// Set background to white
+	// Set background to white.
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
-			color, _ := colorful.Hex("#ffffff")
-			img.Set(x, y, color)
+			img.Set(x, y, white)
 		}
 	}
 
-	for _, member := range members {
-		// Map the complex number to pixel coordinates
-		px := int((real(member) - xmin) / (xmax - xmin) * float64(width))
-		py := int((imag(member) - ymin) / (ymax - ymin) * float64(height))
-
-		// Set the pixel color
-		if px >= 0 && px < width && py >= 0 && py < height {
-			stability := isStable(member, 35)
-			if cmplx.Abs(stability) > 2 || cmplx.IsNaN(stability) {
-				color, _ := colorful.Hex("#ffffff")
-				img.Set(px, py, color)
-				continue
+	var wg sync.WaitGroup
+	// Process each row concurrently.
+	for y := 0; y < height; y++ {
+		wg.Add(1)
+		go func(y int) {
+			defer wg.Done()
+			for x := 0; x < width; x++ {
+				c := complex(xmin+float64(x)*dx, ymin+float64(y)*dy)
+				stability := isStable(c, 35)
+				if cmplx.Abs(stability) > 2 || cmplx.IsNaN(stability) {
+					continue // remains white from background.
+				}
+				magnitude := cmplx.Abs(stability)
+				hue := 1.0 - math.Min(magnitude/2.0, 1.0)
+				colord := colorful.Hsl(hue*360, 0.5, 0.5)
+				img.Set(x, y, colord)
 			}
-			// Map the stability value to a color gradient
-			magnitude := cmplx.Abs(stability)
-			hue := 1.0 - math.Min(magnitude/2.0, 1.0) // Convert magnitude to a hue value between 0 and 1
-			colord := colorful.Hsl(hue*360, 0.5, 0.5)
-			img.Set(px, py, colord)
-		}
+		}(y)
 	}
+	wg.Wait()
 
 	var buf bytes.Buffer
 	err := png.Encode(&buf, img)
@@ -81,30 +75,6 @@ func processInput(xmin float64, ymin float64, xmax float64, ymax float64, width 
 		return nil, err
 	}
 	return &buf, nil
-}
-
-// Generate a 2d matrix of complex numbers
-func complexMatrix(xmin, xmax, ymin, ymax float64, pixelDensity int) [][]complex128 {
-	re := linspace(xmin, xmax, pixelDensity)
-	im := linspace(ymin, ymax, pixelDensity)
-	matrix := make([][]complex128, pixelDensity)
-	for i := range matrix {
-		matrix[i] = make([]complex128, pixelDensity)
-		for j := range matrix[i] {
-			matrix[i][j] = complex(re[j], im[i])
-		}
-	}
-	return matrix
-}
-
-// Generate a linearly spaced slice of floats across an arbitrary range
-func linspace(start, end float64, num int) []float64 {
-	step := (end - start) / float64(num)
-	result := make([]float64, num)
-	for i := 0; i < num; i++ {
-		result[i] = start + float64(i)*step
-	}
-	return result
 }
 
 // Check if a complex number is stable after a given number of iterations
